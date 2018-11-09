@@ -16,6 +16,18 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
 
+    <TextView
+        android:id="@+id/date_totextview"
+
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/date_textview"
+        app:layout_constraintStart_toStartOf="@+id/date_textview"
+        app:layout_constraintTop_toBottomOf="@+id/date_textview"
+        tools:text="date goes here" />
+
     <Button
         android:id="@+id/set_date_button"
         app:layout_constraintStart_toStartOf="parent"

@@ -179,6 +179,99 @@ public class DatePicker extends FrameLayout {
         root.addView(this);
     }
 
+    DatePicker(ViewGroup root, int numberPickerStyle,int position) {
+        super(root.getContext());
+        mContext = root.getContext();
+
+        // initialization based on locale
+        setCurrentLocale(Locale.getDefault());
+
+        LayoutInflater inflater = (LayoutInflater) new ContextThemeWrapper(mContext,
+                numberPickerStyle).getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.date_picker_container, this, true);
+
+        mPickerContainer = findViewById(R.id.parent);
+
+        OnValueChangeListener onChangeListener = new OnValueChangeListener() {
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                updateInputState();
+                mTempDate.setTimeInMillis(mCurrentDate.getTimeInMillis());
+                // take care of wrapping of days and months to update greater fields
+                if (picker == mDaySpinner) {
+                    int maxDayOfMonth = mTempDate.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    if (oldVal == maxDayOfMonth && newVal == 1) {
+                        mTempDate.add(Calendar.DAY_OF_MONTH, 1);
+                    } else if (oldVal == 1 && newVal == maxDayOfMonth) {
+                        mTempDate.add(Calendar.DAY_OF_MONTH, -1);
+                    } else {
+                        mTempDate.add(Calendar.DAY_OF_MONTH, newVal - oldVal);
+                    }
+                } else if (picker == mMonthSpinner) {
+                    if (oldVal == 11 && newVal == 0) {
+                        mTempDate.add(Calendar.MONTH, 1);
+                    } else if (oldVal == 0 && newVal == 11) {
+                        mTempDate.add(Calendar.MONTH, -1);
+                    } else {
+                        mTempDate.add(Calendar.MONTH, newVal - oldVal);
+                    }
+                } else if (picker == mYearSpinner) {
+                    mTempDate.set(Calendar.YEAR, newVal);
+                } else {
+                    throw new IllegalArgumentException();
+                }
+                // now set the date to the adjusted one
+                setDate(mTempDate.get(Calendar.YEAR), mTempDate.get(Calendar.MONTH),
+                        mTempDate.get(Calendar.DAY_OF_MONTH));
+                updateSpinners();
+                notifyDateChanged();
+            }
+        };
+
+        // day
+        mDaySpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_day_month,
+                mPickerContainer, false);
+        mDaySpinner.setId(R.id.day);
+        mDaySpinner.setFormatter(new TwoDigitFormatter());
+        mDaySpinner.setOnLongPressUpdateInterval(100);
+        mDaySpinner.setOnValueChangedListener(onChangeListener);
+        mDaySpinnerInput = NumberPickers.findEditText(mDaySpinner);
+
+
+        // month
+        mMonthSpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_day_month,
+                mPickerContainer, false);
+        mMonthSpinner.setId(R.id.month);
+        mMonthSpinner.setMinValue(0);
+        mMonthSpinner.setMaxValue(mNumberOfMonths - 1);
+        mMonthSpinner.setDisplayedValues(mShortMonths);
+        mMonthSpinner.setOnLongPressUpdateInterval(200);
+        mMonthSpinner.setOnValueChangedListener(onChangeListener);
+        mMonthSpinnerInput = NumberPickers.findEditText(mMonthSpinner);
+
+        // year
+        mYearSpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_year,
+                mPickerContainer, false);
+        mYearSpinner.setId(R.id.year);
+        mYearSpinner.setOnLongPressUpdateInterval(100);
+        mYearSpinner.setOnValueChangedListener(onChangeListener);
+        mYearSpinnerInput = NumberPickers.findEditText(mYearSpinner);
+
+        // initialize to current date
+        mCurrentDate.setTimeInMillis(System.currentTimeMillis());
+
+        // re-order the number spinners to match the current date format
+        reorderSpinners();
+
+        // If not explicitly specified this view is important for accessibility.
+        if (getImportantForAccessibility() == View.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+            setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        }
+
+
+        root.addView(this,position);
+    }
+
     void init(int year, int monthOfYear, int dayOfMonth,
               boolean isDayShown, OnDateChangedListener onDateChangedListener) {
         mIsDayShown = isDayShown;
