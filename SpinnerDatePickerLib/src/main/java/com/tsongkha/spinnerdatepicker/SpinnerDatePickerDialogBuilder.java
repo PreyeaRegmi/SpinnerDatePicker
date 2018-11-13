@@ -70,6 +70,18 @@ public class SpinnerDatePickerDialogBuilder {
         return this;
     }
 
+    public SpinnerDatePickerDialogBuilder setCurrentDateAsMinDate()
+    {
+        this.minDate=Calendar.getInstance();
+        return this;
+    }
+
+    public SpinnerDatePickerDialogBuilder setCurrentDateAsMaxDate()
+    {
+        this.maxDate=Calendar.getInstance();
+        return this;
+    }
+
 
     public DatePickerDialog build() {
         if (context == null) throw new IllegalArgumentException("Context must not be null");

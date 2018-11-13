@@ -71,6 +71,8 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
         void onToDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth);
 
         void onInvalidRangeSelected();
+
+        void onDateRangeReceivedSucess();
     }
 
     DateRangePickerDialog(Context context,
@@ -155,6 +157,7 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
                         fromDatePicker.getMonth(), fromDatePicker.getDayOfMonth());
                 mCallBack.onToDateSet(toDatePicker, toDatePicker.getYear(),
                         toDatePicker.getMonth(), toDatePicker.getDayOfMonth());
+                mCallBack.onDateRangeReceivedSucess();
                 this.dismiss();
             }
             else

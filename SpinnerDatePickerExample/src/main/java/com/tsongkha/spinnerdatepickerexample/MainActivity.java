@@ -103,4 +103,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     public void onInvalidRangeSelected() {
         Toast.makeText(this, "Invalid date range selected", Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void onDateRangeReceivedSucess() {
+
+    }
 }

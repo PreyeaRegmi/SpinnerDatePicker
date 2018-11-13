@@ -36,9 +36,6 @@
         <item name="android:windowBackground">@drawable/ic_rounded_white</item>
         <item name="android:windowTitleStyle">@style/DatePickerDialogTitle</item>
         <item name="android:buttonStyle">@style/DatePickerButtonStyle</item>
-
-
-
     </style>
 
     <style name="DatePickerDialogTitle" parent="Theme.AppCompat.Light.Dialog.Alert">
