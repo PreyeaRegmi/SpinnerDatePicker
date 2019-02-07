@@ -1,6 +1,5 @@
 package com.tsongkha.spinnerdatepicker;
 
-import android.animation.AnimatorSet;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,13 +8,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AnimationSet;
 import android.view.animation.Interpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -41,8 +36,8 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
     private final OnRangeDateSetListener mCallBack;
     private final DateFormat mTitleDateFormat;
     private final float pixelToDp;
-    private static Interpolator interpolator= new AccelerateDecelerateInterpolator();
-    private  String mTitleText;
+    private static Interpolator interpolator = new AccelerateDecelerateInterpolator();
+    private String mTitleText;
 
     private boolean mIsDayShown = true;
     private boolean updateRangeTitle = true;
@@ -50,8 +45,8 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
     private OnFromDateChanged onFromDateChanged;
     private OnToDateChanged onToDateChanged;
 
-    private TextView fromDateTitle;
-    private TextView toDateTitle;
+    private TextView fromDateTitle = null;
+    private TextView toDateTitle = null;
 
     private View positiveButton;
 
@@ -68,6 +63,7 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
          * @param dayOfMonth  The day of the month that was set.
          */
         void onFromDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth);
+
         void onToDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth);
 
         void onInvalidRangeSelected();
@@ -84,21 +80,22 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
                           Calendar maxDate,
                           boolean isDayShown,
                           boolean isTitleShown,
-                          String title) {
+                          String title,
+                          String fromTitleTextString,
+                          String toTitleTextString) {
         super(context, theme);
 
-        pixelToDp=context.getResources().getDisplayMetrics().density;
+        pixelToDp = context.getResources().getDisplayMetrics().density;
         mCallBack = callBack;
         mTitleDateFormat = DateFormat.getDateInstance(DateFormat.LONG);
         mIsDayShown = isDayShown;
         updateRangeTitle = isTitleShown;
-        mTitleText=title;
+        mTitleText = title;
 
         updateTitle();
 
         setButton(BUTTON_POSITIVE, context.getText(android.R.string.ok),
-                (OnClickListener)null);
-
+                (OnClickListener) null);
 
 
         setButton(BUTTON_NEGATIVE, context.getText(android.R.string.cancel),
@@ -109,19 +106,25 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
         View view = inflater.inflate(R.layout.date_range_picker_dialog_container, null);
         setView(view);
 
-        fromDateTitle=view.findViewById(R.id.fromDateText);
-        toDateTitle=view.findViewById(R.id.toDateText);
+        fromDateTitle = view.findViewById(R.id.fromDateText);
+        toDateTitle = view.findViewById(R.id.toDateText);
 
-        onFromDateChanged=new OnFromDateChanged();
-        onToDateChanged=new OnToDateChanged();
+        if (fromTitleTextString != null && fromTitleTextString.length() > 0)
+            fromDateTitle.setText(fromTitleTextString);
 
-        fromDatePicker = new DatePicker((ViewGroup) view, spinnerTheme,1);
+        if (toTitleTextString != null && toTitleTextString.length() > 0)
+            toDateTitle.setText(toTitleTextString);
+
+        onFromDateChanged = new OnFromDateChanged();
+        onToDateChanged = new OnToDateChanged();
+
+        fromDatePicker = new DatePicker((ViewGroup) view, spinnerTheme, 1);
         fromDatePicker.setMinDate(minDate.getTimeInMillis());
         fromDatePicker.setMaxDate(maxDate.getTimeInMillis());
 //        fromDatePicker.init(defaultDate.get(Calendar.YEAR), defaultDate.get(Calendar.MONTH), defaultDate.get(Calendar.DAY_OF_MONTH), isDayShown, onFromDateChanged);
         fromDatePicker.init(minDate.get(Calendar.YEAR), minDate.get(Calendar.MONTH), minDate.get(Calendar.DAY_OF_MONTH), isDayShown, onFromDateChanged);
 
-        toDatePicker = new DatePicker((ViewGroup) view, spinnerTheme,3);
+        toDatePicker = new DatePicker((ViewGroup) view, spinnerTheme, 3);
         toDatePicker.setMinDate(minDate.getTimeInMillis());
         toDatePicker.setMaxDate(maxDate.getTimeInMillis());
 //        toDatePicker.init(defaultDate.get(Calendar.YEAR), defaultDate.get(Calendar.MONTH), defaultDate.get(Calendar.DAY_OF_MONTH), isDayShown, onToDateChanged);
@@ -132,7 +135,7 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
     @Override
     protected void onStart() {
         super.onStart();
-        positiveButton= getButton(BUTTON_POSITIVE);
+        positiveButton = getButton(BUTTON_POSITIVE);
         positiveButton.setOnClickListener(this);
     }
 
@@ -150,7 +153,7 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
     @Override
     public void onClick(View v) {
         if (mCallBack != null) {
-            if(validateSelectedDate()) {
+            if (validateSelectedDate()) {
                 fromDatePicker.clearFocus();
                 toDatePicker.clearFocus();
                 mCallBack.onFromDateSet(fromDatePicker, fromDatePicker.getYear(),
@@ -159,44 +162,22 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
                         toDatePicker.getMonth(), toDatePicker.getDayOfMonth());
                 mCallBack.onDateRangeReceivedSucess();
                 this.dismiss();
-            }
-            else
+            } else
                 mCallBack.onInvalidRangeSelected();
         }
     }
 
     private boolean validateSelectedDate() {
-        Calendar fromDate=new GregorianCalendar(fromDatePicker.getYear(),fromDatePicker.getMonth(),fromDatePicker.getDayOfMonth());
-        Calendar toDate=new GregorianCalendar(toDatePicker.getYear(),toDatePicker.getMonth(),toDatePicker.getDayOfMonth());
+        Calendar fromDate = new GregorianCalendar(fromDatePicker.getYear(), fromDatePicker.getMonth(), fromDatePicker.getDayOfMonth());
+        Calendar toDate = new GregorianCalendar(toDatePicker.getYear(), toDatePicker.getMonth(), toDatePicker.getDayOfMonth());
         return fromDate.getTimeInMillis() <= toDate.getTimeInMillis();
     }
 
 
-
-
     private void updateTitle() {
-        if(mTitleText!=null&&mTitleText.length()>0)
-        setTitle(mTitleText);
+        if (mTitleText != null && mTitleText.length() > 0)
+            setTitle(mTitleText);
     }
-
-//    private void updateFromTitle(Calendar updatedDate)
-//    {
-//        if(updateRangeTitle) {
-//            fromDateTitle.setText("From Date: "+ mTitleDateFormat.format(updatedDate.getTime()));
-//
-//        } else {
-//            setTitle("From Date:");
-//        }
-//    }
-//    private void updateToTitle(Calendar updatedDate)
-//    {
-//        if(updateRangeTitle) {
-//            toDateTitle.setText("To : "+ mTitleDateFormat.format(updatedDate.getTime()));
-//
-//        } else {
-//            setTitle("To Date:");
-//        }
-//    }
 
     @Override
     public Bundle onSaveInstanceState() {
@@ -212,7 +193,7 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
 
         state.putBoolean(SHOULD_RANGE_TITLE_NEED_TO_BE_SHOWN, updateRangeTitle);
 
-        state.putString(RANGE_PICKER_TITLE,mTitleText);
+        state.putString(RANGE_PICKER_TITLE, mTitleText);
 
         return state;
     }
@@ -251,8 +232,7 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
         toDatePicker.init(tYear, tMonth, tDay, mIsDayShown, onToDateChanged);
     }
 
-    public  class OnFromDateChanged implements OnDateChangedListener
-    {
+    public class OnFromDateChanged implements OnDateChangedListener {
 
         @Override
         public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -264,8 +244,7 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
         }
     }
 
-    public  class OnToDateChanged implements OnDateChangedListener
-    {
+    public class OnToDateChanged implements OnDateChangedListener {
 
         @Override
         public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {

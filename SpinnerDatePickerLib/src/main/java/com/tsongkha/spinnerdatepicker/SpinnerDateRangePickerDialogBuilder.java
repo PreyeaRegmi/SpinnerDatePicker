@@ -17,6 +17,8 @@ public class SpinnerDateRangePickerDialogBuilder {
     private Calendar minDate = new GregorianCalendar(1900, 0, 1);
     private Calendar maxDate = new GregorianCalendar(2100, 0, 1);
     private String titleString;
+    private String toTitleString;
+    private String fromTitleString;
 
 
     public SpinnerDateRangePickerDialogBuilder context(Context context) {
@@ -83,11 +85,23 @@ public class SpinnerDateRangePickerDialogBuilder {
         return this;
     }
 
+    public SpinnerDateRangePickerDialogBuilder setToTitle(String title)
+    {
+        this.toTitleString=title;
+        return this;
+    }
+
+    public SpinnerDateRangePickerDialogBuilder setFromTitle(String title)
+    {
+        this.fromTitleString=title;
+        return this;
+    }
+
 
     public DateRangePickerDialog build() {
         if (context == null) throw new IllegalArgumentException("Context must not be null");
         if (maxDate.getTime().getTime() <= minDate.getTime().getTime()) throw new IllegalArgumentException("Max date is not after Min date");
 
-        return new DateRangePickerDialog(context, theme, spinnerTheme, callBack, defaultDate, minDate, maxDate, isDayShown, isTitleShown,titleString);
+        return new DateRangePickerDialog(context, theme, spinnerTheme, callBack, defaultDate, minDate, maxDate, isDayShown, isTitleShown,titleString,fromTitleString,toTitleString);
     }
 }
