@@ -16,7 +16,7 @@ import java.util.Calendar;
  * A fork of the Android Open Source Project DatePickerDialog class
  */
 public class DatePickerDialog extends AlertDialog implements OnClickListener,
-        OnDateChangedListener {
+        OnDateChangedListener, View.OnClickListener {
 
     private static final String YEAR = "year";
     private static final String MONTH = "month";
@@ -30,6 +30,13 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
 
     private boolean mIsDayShown = true;
     private boolean mIsTitleShown = true;
+
+    private View positiveButton;
+
+    @Override
+    public void onClick(View v) {
+
+    }
 
     /**
      * The datePickerCallback used to indicate the user is done filling in the date.
@@ -54,7 +61,9 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
                      Calendar maxDate,
                      boolean isDayShown,
                      boolean isTitleShown,
-                     String title) {
+                     String title,
+                     String positiveButtonText,
+                     String negativeButtonText) {
         super(context, theme);
 
         mCallBack = callBack;
@@ -65,9 +74,17 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
 
         updateTitle(defaultDate);
 
-        setButton(BUTTON_POSITIVE, context.getText(android.R.string.ok),
-                this);
-        setButton(BUTTON_NEGATIVE, context.getText(android.R.string.cancel),
+        if(positiveButtonText==null||positiveButtonText.length()<1)
+            positiveButtonText=context.getString(android.R.string.ok);
+
+        if(negativeButtonText==null||negativeButtonText.length()<1)
+            negativeButtonText=context.getString(android.R.string.cancel);
+
+        setButton(BUTTON_POSITIVE, positiveButtonText,
+                (OnClickListener) this);
+
+
+        setButton(BUTTON_NEGATIVE, negativeButtonText,
                 (OnClickListener) null);
 
         LayoutInflater inflater =
@@ -87,8 +104,17 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
             mDatePicker.clearFocus();
             mCallBack.onDateSet(mDatePicker, mDatePicker.getYear(),
                     mDatePicker.getMonth(), mDatePicker.getDayOfMonth());
+            this.dismiss();
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+
 
     @Override
     public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {

@@ -56,35 +56,39 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     @VisibleForTesting
     void showDate(int year, int monthOfYear, int dayOfMonth, int spinnerTheme) {
-//        new SpinnerDatePickerDialogBuilder()
-//                .context(MainActivity.this)
-//                .spinnerTheme(R.style.NumberPickerStyle)
-//                .showTitle(true)
-//                .showDaySpinner(true)
-//                .defaultDate(1990, 0, 1)
-//                .maxDate(2020, 0, 1)
-//                .minDate(1900, 0, 1)
-//                .dialogTheme(R.style.DatePickerTheme)
-//                .showTitle(true)
-//                .setTitle("Date of Birth")
-//                .callback(MainActivity.this)
-//                .build()
-//                .show();
-
-        new SpinnerDateRangePickerDialogBuilder()
+        new SpinnerDatePickerDialogBuilder()
                 .context(MainActivity.this)
                 .spinnerTheme(R.style.NumberPickerStyle)
                 .showTitle(true)
                 .showDaySpinner(true)
                 .defaultDate(1990, 0, 1)
-                .setCurrentDateAsMaxDate()
-                .minDate(2017,10,10)
+                .maxDate(2020, 0, 1)
+                .minDate(1900, 0, 1)
                 .dialogTheme(R.style.DatePickerTheme)
                 .showTitle(true)
-                .setTitle("Filter by date")
+                .setPositiveButtonText("Ok chata")
+                .setNegativeButtonText("Ok Chaina ni")
+                .setTitle("Date of Birth")
                 .callback(MainActivity.this)
                 .build()
                 .show();
+
+//        new SpinnerDateRangePickerDialogBuilder()
+//                .context(MainActivity.this)
+//                .spinnerTheme(R.style.NumberPickerStyle)
+//                .showTitle(true)
+//                .showDaySpinner(true)
+//                .defaultDate(1990, 0, 1)
+//                .setCurrentDateAsMaxDate()
+//                .minDate(2017,10,10)
+//                .dialogTheme(R.style.DatePickerTheme)
+//                .showTitle(true)
+//                .setTitle("Filter by date")
+//                .setPositiveButtonText("Ok chata")
+//                .setNegativeButtonText("Ok Chaina ni")
+//                .callback(MainActivity.this)
+//                .build()
+//                .show();
     }
 
     @Override

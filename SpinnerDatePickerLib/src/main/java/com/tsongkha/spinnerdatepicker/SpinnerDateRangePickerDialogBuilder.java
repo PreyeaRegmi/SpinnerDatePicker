@@ -19,6 +19,8 @@ public class SpinnerDateRangePickerDialogBuilder {
     private String titleString;
     private String toTitleString;
     private String fromTitleString;
+    private String positiveButtonText;
+    private String negativeButtonText;
 
 
     public SpinnerDateRangePickerDialogBuilder context(Context context) {
@@ -97,11 +99,23 @@ public class SpinnerDateRangePickerDialogBuilder {
         return this;
     }
 
+    public SpinnerDateRangePickerDialogBuilder setPositiveButtonText(String positiveButtonText)
+    {
+        this.positiveButtonText=positiveButtonText;
+        return this;
+    }
+
+    public SpinnerDateRangePickerDialogBuilder setNegativeButtonText(String negativeButtonText)
+    {
+        this.negativeButtonText=negativeButtonText;
+        return this;
+    }
+
 
     public DateRangePickerDialog build() {
         if (context == null) throw new IllegalArgumentException("Context must not be null");
         if (maxDate.getTime().getTime() <= minDate.getTime().getTime()) throw new IllegalArgumentException("Max date is not after Min date");
 
-        return new DateRangePickerDialog(context, theme, spinnerTheme, callBack, defaultDate, minDate, maxDate, isDayShown, isTitleShown,titleString,fromTitleString,toTitleString);
+        return new DateRangePickerDialog(context, theme, spinnerTheme, callBack, defaultDate, minDate, maxDate, isDayShown, isTitleShown,titleString,fromTitleString,toTitleString,positiveButtonText,negativeButtonText);
     }
 }

@@ -82,7 +82,9 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
                           boolean isTitleShown,
                           String title,
                           String fromTitleTextString,
-                          String toTitleTextString) {
+                          String toTitleTextString,
+                          String positiveButtonText,
+                          String negativeButtonText) {
         super(context, theme);
 
         pixelToDp = context.getResources().getDisplayMetrics().density;
@@ -94,11 +96,17 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
 
         updateTitle();
 
-        setButton(BUTTON_POSITIVE, context.getText(android.R.string.ok),
+        if(positiveButtonText==null||positiveButtonText.length()<1)
+            positiveButtonText=context.getString(android.R.string.ok);
+
+        if(negativeButtonText==null||negativeButtonText.length()<1)
+            negativeButtonText=context.getString(android.R.string.cancel);
+
+        setButton(BUTTON_POSITIVE, positiveButtonText,
                 (OnClickListener) null);
 
 
-        setButton(BUTTON_NEGATIVE, context.getText(android.R.string.cancel),
+        setButton(BUTTON_NEGATIVE, negativeButtonText,
                 (OnClickListener) null);
 
         LayoutInflater inflater =
@@ -141,7 +149,7 @@ public class DateRangePickerDialog extends AlertDialog implements OnClickListene
 
     @Override
     protected void onStop() {
-        positiveButton.setOnClickListener(this);
+        positiveButton.setOnClickListener(null);
     }
 
     @Override
